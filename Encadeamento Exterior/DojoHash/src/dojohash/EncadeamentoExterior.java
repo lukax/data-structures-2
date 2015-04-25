@@ -71,31 +71,25 @@ public class EncadeamentoExterior {
         
         
         //TODO 3-Código do Cliente mod TAM para saber onde colocar na tabela hash
-        Cliente cliente = new Cliente(codCli, nomeCli, -1, true);
+        Cliente cliente = new Cliente(codCli, nomeCli, -1, Cliente.OCUPADO);
         int numCompart = codCli%tam;
-        System.out.println("numCompart " + (numCompart));
         hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
         compartimento = CompartimentoHash.le(hashFile);
-        System.out.println("compart content: " +compartimento.prox);
+        hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
         
         if (compartimento.prox==-1){
             compartimento.prox=numRegistros;
-            System.out.println("numreg " + numRegistros);
-            hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
             compartimento.salva(hashFile);
+            //ir ate o cursos da arq de dados e salva o cliente
             dataFile.seek(Cliente.tamanhoRegistro*numRegistros);
             cliente.salva(dataFile);
-            numRegistros++;
-        }            
+        }           
+        numRegistros++;
         hashFile.close();
         dataFile.close();
         
-        //TODO 4- Verificar Clientes na tabela até prox = -1
-        
-        
-
-        
-        return Integer.MAX_VALUE;
+   
+        return (numRegistros-1);
     }
 
     /**
