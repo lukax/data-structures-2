@@ -75,15 +75,21 @@ public class EncadeamentoExterior {
         int numCompart = codCli%tam;
         hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
         compartimento = CompartimentoHash.le(hashFile);
-        hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
+        
+        this.busca(codCli, nomeArquivoHash, nomeArquivoDados)
         
         if (compartimento.prox==-1){
+            hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
             compartimento.prox=numRegistros;
             compartimento.salva(hashFile);
             //ir ate o cursos da arq de dados e salva o cliente
             dataFile.seek(Cliente.tamanhoRegistro*numRegistros);
             cliente.salva(dataFile);
-        }           
+        }   
+        else {
+            if (compartimento.prox)
+        }
+        
         numRegistros++;
         hashFile.close();
         dataFile.close();

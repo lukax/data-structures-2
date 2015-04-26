@@ -214,7 +214,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa inserção de registro com chave que já existe
      */
-    //@Test
+    @Test
     public void testaInsereChaveExistente() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
