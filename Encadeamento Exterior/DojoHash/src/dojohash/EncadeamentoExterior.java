@@ -43,10 +43,49 @@ public class EncadeamentoExterior {
     * @param nomeArquivoDados nome do arquivo onde os dados estão armazenados    
     * @return o endereco onde o cliente foi encontrado, ou -1 se não for encontrado
     */
-    public int busca(int codCli, String nomeArquivoHash, String nomeArquivoDados) throws Exception {
-        //TODO: Inserir aqui o código do algoritmo        
-        return Integer.MAX_VALUE;
-    }
+   public int busca(int codCli, String nomeArquivoHash, String nomeArquivoDados) throws Exception {
+       int tam = 7; 
+       int hashCode = codCli % tam;
+        int posHash = hashCode * CompartimentoHash.tamanhoRegistro;
+        
+        RandomAccessFile arqHash = new RandomAccessFile(nomeArquivoHash, "r");
+        arqHash.seek(posHash);
+        
+        CompartimentoHash compartimento = CompartimentoHash.le(arqHash);
+
+        arqHash.close();
+
+        if(compartimento.prox == -1){
+            return -1;
+        }
+        
+        
+        RandomAccessFile arqDados = new RandomAccessFile(nomeArquivoDados, "r");
+        int posArq, posTabela, resultadoParcialExclusao;
+        //posTabela == no do cliente na tabela
+        posArq = compartimento.prox * Cliente.tamanhoRegistro;
+        arqDados.seek(posArq);
+        Cliente lido = null;    
+        do{
+            lido = Cliente.le(arqDados);
+            if(lido.codCliente == codCli && lido.flag!=Cliente.LIBERADO){
+                arqDados.close();
+                posTabela=posArq/Cliente.tamanhoRegistro;      
+                return posTabela; 
+            }
+            else{
+                posArq = lido.prox * Cliente.tamanhoRegistro;
+                if(posArq>=0)
+                arqDados.seek(posArq); 
+            }
+            
+        }while(lido.prox != -1);
+        
+        arqDados.close();
+        return -1;
+        
+        
+     }
 
     /**
     * Executa inserção em Arquivos por Encadeamento Exterior (Hash)
@@ -76,7 +115,6 @@ public class EncadeamentoExterior {
         hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
         compartimento = CompartimentoHash.le(hashFile);
         
-        this.busca(codCli, nomeArquivoHash, nomeArquivoDados)
         
         if (compartimento.prox==-1){
             hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
@@ -87,7 +125,6 @@ public class EncadeamentoExterior {
             cliente.salva(dataFile);
         }   
         else {
-            if (compartimento.prox)
         }
         
         numRegistros++;

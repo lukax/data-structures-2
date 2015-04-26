@@ -64,7 +64,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa busca de chave que é encontrada na primeira tentativa
      */
-    //@Test
+    @Test
     public void testaBuscaChave1Tentativa() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(-1));
         tabHash.add(new CompartimentoHash(0));
@@ -105,7 +105,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa busca de chave que é encontrada na segunda tentativa
      */
-    //@Test
+    @Test
     public void testaBuscaChave2Tentativa() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
@@ -131,7 +131,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa busca de chave inexistente
      */
-    //@Test
+    @Test
     public void testaBuscaChaveInexistente() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
@@ -157,7 +157,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa busca de chave que havia sido removida, mas foi reinserida mais adiante no arquivo
      */
-    //@Test
+    @Test
     public void testaBuscaChaveReinserida() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
