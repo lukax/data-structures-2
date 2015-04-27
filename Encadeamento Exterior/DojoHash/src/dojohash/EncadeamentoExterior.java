@@ -110,29 +110,72 @@ public class EncadeamentoExterior {
         
         
         //TODO 3-Código do Cliente mod TAM para saber onde colocar na tabela hash
-        Cliente cliente = new Cliente(codCli, nomeCli, -1, Cliente.OCUPADO);
+        Cliente clienteASerInserido = new Cliente(codCli, nomeCli, -1, Cliente.OCUPADO);
         int numCompart = codCli%tam;
-        hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
+        int posArqHash = CompartimentoHash.tamanhoRegistro*numCompart;
+        int posArqDados;
+        int posRetorno;
+        boolean over=false;
+        Cliente clienteLido;
+        
+        hashFile.seek(posArqHash);
         compartimento = CompartimentoHash.le(hashFile);
+        posRetorno=-1;
         
         
         if (compartimento.prox==-1){
-            hashFile.seek(CompartimentoHash.tamanhoRegistro*numCompart);
+            hashFile.seek(posArqHash);
             compartimento.prox=numRegistros;
             compartimento.salva(hashFile);
-            //ir ate o cursos da arq de dados e salva o cliente
-            dataFile.seek(Cliente.tamanhoRegistro*numRegistros);
-            cliente.salva(dataFile);
+            posArqDados=Cliente.tamanhoRegistro*numRegistros;
+            dataFile.seek(posArqDados);
+            clienteASerInserido.salva(dataFile);
+            posRetorno=numRegistros;
         }   
         else {
+           
+               posArqDados = Cliente.tamanhoRegistro*compartimento.prox;
+              do{
+                dataFile.seek(posArqDados);
+                clienteLido=Cliente.le(dataFile);
+                if (clienteLido.codCliente==clienteASerInserido.codCliente){
+                    posRetorno=-1;
+                    over=true;
+                }
+                else{
+                    if (clienteLido.flag==Cliente.LIBERADO){
+                        dataFile.seek(posArqDados);
+                        clienteASerInserido.prox=clienteLido.prox;
+                        clienteASerInserido.salva(dataFile);
+                        posRetorno=posArqDados/Cliente.tamanhoRegistro;
+                        over=true;
+                        
+                        }
+                    else{
+                       if(clienteLido.prox==-1){
+                           clienteASerInserido.salva(dataFile);
+                           clienteLido.prox=(posArqDados/Cliente.tamanhoRegistro)+1;
+                           dataFile.seek(posArqDados);
+                           clienteLido.salva(dataFile);
+                           posArqDados=Cliente.tamanhoRegistro*clienteLido.prox;
+                           posRetorno=posArqDados/Cliente.tamanhoRegistro;
+                           dataFile.seek(posArqDados);
+                           clienteLido=Cliente.le(dataFile);
+                           over=true;
+                       }
+                    }
+                }
+               posArqDados=Cliente.tamanhoRegistro*clienteLido.prox;
+              }while(clienteLido.prox!=-1 && over==false);
+
+            
         }
         
         numRegistros++;
         hashFile.close();
         dataFile.close();
-        
    
-        return (numRegistros-1);
+        return posRetorno;
     }
 
     /**

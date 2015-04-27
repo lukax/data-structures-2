@@ -238,7 +238,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa inserção no final da lista encadeada
      */
-    //@Test
+    @Test
     public void testaInsereFinalLista() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
@@ -272,7 +272,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa inserção no de registro em espaco vazio deixado por registro excluído
      */
-    //@Test
+    @Test
     public void testaInsereEspacoVazio() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
