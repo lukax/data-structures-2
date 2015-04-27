@@ -305,7 +305,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa exclusão de chave não existente
      */
-    //@Test
+    @Test
     public void testaExclusaoChaveInexistente() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
@@ -336,7 +336,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa exclusão do primeiro no da lista encadeada de um determinado compartimento
      */
-    //@Test
+    @Test
     public void testaExclusaoPrimeiroNo() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));
@@ -369,7 +369,7 @@ public class EncadeamentoExteriorTest {
     /**
      * Testa exclusão do ultimo no da lista encadeada de um determinado compartimento
      */
-    //@Test
+    @Test
     public void testaExclusaoUltimoNo() throws FileNotFoundException, Exception {
         tabHash.add(new CompartimentoHash(0));
         tabHash.add(new CompartimentoHash(-1));

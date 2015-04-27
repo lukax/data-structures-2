@@ -185,9 +185,23 @@ public class EncadeamentoExterior {
     * @param nomeArquivoDados nome do arquivo onde os dados estão armazenados
     * @return endereço do cliente que foi excluído, -1 se cliente não existe
     */
-    public int exclui(int CodCli, String nomeArquivoHash, String nomeArquivoDados) {
-        //TODO: Inserir aqui o código do algoritmo de remoção
-        return Integer.MAX_VALUE;
+    public int exclui(int CodCli, String nomeArquivoHash, String nomeArquivoDados) throws Exception {
+        int posTabela;
+        RandomAccessFile dataFile;
+        posTabela=busca(CodCli, nomeArquivoHash, nomeArquivoDados);
+        if(posTabela==-1){
+            return -1;
+        }
+        else{
+            dataFile = new RandomAccessFile(nomeArquivoDados, "rw");
+            dataFile.seek(Cliente.tamanhoRegistro*posTabela);
+            Cliente lido = Cliente.le(dataFile);
+            lido.flag=Cliente.LIBERADO;
+            dataFile.seek(Cliente.tamanhoRegistro*posTabela);
+            lido.salva(dataFile);
+        }
+        dataFile.close();
+        return posTabela;
     }
 
 }
