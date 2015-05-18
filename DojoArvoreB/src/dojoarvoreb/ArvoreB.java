@@ -3,15 +3,8 @@
  * and open the template in the editor.
  */
 package dojoarvoreb;
-
-import java.io.File;
-import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class ArvoreB {    
-
     /**
      * Executa busca em Arquivos utilizando Arvore B
      * Assumir que ponteiro para próximo nó é igual a -1 quando não houver próximo nó
@@ -23,19 +16,39 @@ public class ArvoreB {
     encontrou = true
     pont aponta para a página (nó) que contém a chave
     pos aponta para a posição em que a chave se encontra dentro da página (nó)
-
     Caso a chave codCli não seja encontrada:
     encontrou = false
     pont aponta para a última página (nó) examinada
     pos informa a posição, nessa página, onde a chave deveria estar inserida
      */
     public ResultBusca busca(int codCli, String nomeArquivoMetadados, String nomeArquivoDados) throws Exception {
-        //TODO: Inserir aqui o código do algoritmo
+        Metadados metadado = Metadados.le(new RandomAccessFile(nomeArquivoMetadados, "r"));
         
-        ResultBusca result = new ResultBusca(Integer.MAX_VALUE, Integer.MAX_VALUE, false);
-        return result;
+        RandomAccessFile arquivoDados = new RandomAccessFile(nomeArquivoDados, "r");
+        
+        int pos = metadado.pontRaiz;
+        
+        while(true){
+            arquivoDados.seek(pos);
+            No no = No.le(arquivoDados);
+            for(int i = 0; i < no.m; i++){
+                if(no.clientes.get(i).codCliente == codCli){
+                    return new ResultBusca(pos, i, true);
+                }else if(no.clientes.get(i).codCliente > codCli){
+                    if(no.p.get(i) == -1){
+                        return new ResultBusca(pos, i, false);
+                    }else{
+                        pos = no.p.get(i);
+                        break;
+                    }
+                }else if(i == no.m - 1){
+                    pos = no.p.get(i + 1);
+                    break;
+                }
+            }
+            System.out.println(no);
+        }
     }
-
     /**
      * Executa inserção em Arquivos Indexados por Arvore B
      * @param codCli: código do cliente a ser inserido
@@ -49,7 +62,6 @@ public class ArvoreB {
         return Integer.MAX_VALUE;
                 
     }
-
     /**
      * Executa exclusão em Arquivos Indexados por Arvores B
      * @param codCli: chave do cliente a ser excluído
