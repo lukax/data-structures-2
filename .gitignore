@@ -7,3 +7,5 @@ nbactions.xml
 nb-configuration.xml
 .nb-gradle/
 /ExercicioContaCorrente/nbproject/private/
+/GerenciadorDeDados/nbproject/private/
+/DataManager/nbproject/private/
