@@ -58,9 +58,23 @@ public class ArvoreB {
      * @return endereço da folha onde o cliente foi inserido, -1 se não conseguiu inserir
      */
     public int insere(int codCli, String nomeCli, String nomeArquivoMetadados, String nomeArquivoDados) throws Exception {
-        //TODO: Inserir aqui o código do algoritmo de inserção        
-        return Integer.MAX_VALUE;
-                
+       ResultBusca resultadoDaBusca = busca(codCli, nomeArquivoMetadados, nomeArquivoDados);
+      if(resultadoDaBusca.encontrou){
+          return -1;
+      } 
+      else{
+          RandomAccessFile arquivoDados = new RandomAccessFile(nomeArquivoDados, "rw");
+          arquivoDados.seek(resultadoDaBusca.pos);
+          No no = No.le(arquivoDados);
+          System.out.println(no);
+          Cliente novoCliente = new Cliente(codCli, nomeCli);
+          if (no.m<2*No.d){ //pode inserir
+            no.m++;
+            no.clientes.add(novoCliente);
+            return 0;
+          }
+          return 0;
+      }     
     }
     /**
      * Executa exclusão em Arquivos Indexados por Arvores B
