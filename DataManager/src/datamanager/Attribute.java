@@ -9,6 +9,7 @@ public class Attribute {
     
     private final String name;
     private final String type;
+    private final int attributeSize;
     
     /**
      * The Attribute constructor.
@@ -18,6 +19,16 @@ public class Attribute {
     public Attribute(String name, String type) {
         this.name = name;
         this.type = type;
+        
+        if (this.type.equalsIgnoreCase("int") || this.type.equalsIgnoreCase("Integer") || this.type.equalsIgnoreCase("float")) {
+            this.attributeSize = 4;
+        } else if (this.type.equalsIgnoreCase("double")) {
+            this.attributeSize = 8;
+        } else if (this.type.equalsIgnoreCase("boolean")) {
+            this.attributeSize = 1;
+        } else {
+            this.attributeSize = 12;
+        }
     }
     
     /**

@@ -2,6 +2,9 @@ package datamanager;
 
 import datamanager.Exceptions.AttributeAlreadyExistsException;
 import datamanager.Exceptions.AttributeNotFoundException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 /**
@@ -10,7 +13,10 @@ import java.util.ArrayList;
  */
 public class Table {
     
+    private int recordCount;        // Number of records saved on the table.
     private final String name;
+    private final String hashFile;
+    private final String dataFile;
     private final Catalog catalog;
     private final ArrayList<Attribute> attributes;
     
@@ -19,7 +25,10 @@ public class Table {
      * @param name The name of the table.
      */
     public Table(String name) {
+        this.recordCount = 0;
         this.name = name;
+        this.hashFile = this.name.toLowerCase() + "hash.dat";
+        this.dataFile = this.name.toLowerCase() + "data.dat";
         this.catalog = Catalog.getInstance();
         this.attributes = new ArrayList<>();
     }
@@ -77,5 +86,16 @@ public class Table {
         if (removed == false) {
             throw new AttributeNotFoundException();
         }
+    }
+    
+    public void select() {
+        
+    }
+    
+    public void insert(Object... attributes) throws FileNotFoundException {
+        //TODO: Verificar os atributos da tabela lendo no catalogo.
+        //TODO: Verificar se os atributos passados sao compativeis com o tipo dos atributos dessa tabela. Eles serao passados em ordem. No catalogo tem o tipo dos atributos.
+        //TODO: Fazer a lógica do encadeamento exterior.
+        //TODO: salvar o hash em this.hashFile e os dados em this.dataFile;
     }
 }
