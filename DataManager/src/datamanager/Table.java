@@ -22,8 +22,6 @@ public class Table {
         this.name = name;
         this.catalog = Catalog.getInstance();
         this.attributes = new ArrayList<>();
-        
-        this.catalog.addTable(name);
     }
     
     /**
@@ -55,7 +53,11 @@ public class Table {
             }
         }
         
-        this.attributes.add(new Attribute(name, type));
+        Attribute att = new Attribute(name, type);
+        
+        this.attributes.add(att);
+        
+        this.catalog.addAttributeToTable(att, this.name);
     }
     
     /**
