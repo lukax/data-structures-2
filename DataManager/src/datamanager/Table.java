@@ -92,10 +92,18 @@ public class Table {
         
     }
     
-    public void insert(Object... attributes) throws FileNotFoundException {
+    public static void insert(Object...atributos) throws FileNotFoundException{
+        for(int i=0; i<atributos.length; i++){
+         System.out.println("Inserindo: " + atributos[i].getClass().getName()+" " + atributos[i]);
+                  
+        }
         //TODO: Verificar os atributos da tabela lendo no catalogo.
         //TODO: Verificar se os atributos passados sao compativeis com o tipo dos atributos dessa tabela. Eles serao passados em ordem. No catalogo tem o tipo dos atributos.
         //TODO: Fazer a lógica do encadeamento exterior.
         //TODO: salvar o hash em this.hashFile e os dados em this.dataFile;
+    }
+
+    public Attribute getAttribute(int i) {
+        return this.attributes.get(i);
     }
 }

@@ -7,9 +7,9 @@ package datamanager;
  */
 public class Attribute {
     
-    private final String name;
-    private final String type;
-    private final int attributeSize;
+    private String name;
+    private String type;
+    private int attributeSize;
     
     /**
      * The Attribute constructor.

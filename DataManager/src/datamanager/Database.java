@@ -55,4 +55,13 @@ public class Database {
     public ArrayList getTables() {
         return this.tables;
     }
+
+    Table getTable(String nomeTabela) {
+        for (Table t : this.tables){
+            if (nomeTabela.equalsIgnoreCase(t.getName())){
+                return t;
+            }
+        }
+        return null;
+    }
 }
