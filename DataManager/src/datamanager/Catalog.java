@@ -130,7 +130,7 @@ public class Catalog {
                                         if (attributeChildNode.getNodeName().equalsIgnoreCase("name")) {
                                             attName = attributeChildNode.getTextContent();
                                         } else if (attributeChildNode.getNodeName().equalsIgnoreCase("type")) {
-                                            attName = attributeChildNode.getTextContent();
+                                            attType = attributeChildNode.getTextContent();
                                         }
                                     }
                                 }

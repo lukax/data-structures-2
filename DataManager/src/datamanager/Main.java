@@ -3,6 +3,7 @@ package datamanager;
 import datamanager.Exceptions.AttributeAlreadyExistsException;
 import datamanager.Exceptions.TableAlreadyExistsException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -79,10 +80,43 @@ public class Main {
                 tabela = db.getTable (nomeTabela);
                 System.out.println("#####TABELA: "+ tabela.getName()+"#####");
                 System.out.println("qtd de atributos: "+tabela.getAttributes().size());
+                ArrayList<Object> values = new ArrayList();
+                Object value;
+                
                 for (int i=0; i<tabela.getAttributes().size(); i++){
-                    System.out.print("Valor para "+tabela.getAttribute(i).getName().toUpperCase());
-                    System.out.println(" "+tabela.getAttribute(i).getType().toLowerCase());
+                    String tipo = tabela.getAttribute(i).getType().toUpperCase();
+                    System.out.print("Valor para "+tipo);
+                    System.out.println(" "+tabela.getAttribute(i).getName().toLowerCase());
+                    switch (tipo){
+                        case ("INT"):
+                            value = teclado.nextInt();
+                            values.add(value);
+                            break;
+                        case ("INTEGER"):
+                            value = teclado.nextInt();
+                            values.add(value);
+                            break;
+                        case ("STRING"):
+                            value = teclado.next();
+                            values.add(value);
+                            break;
+                        case ("BOOLEAN"):
+                            value = teclado.nextBoolean();
+                            values.add(value);
+                            break;
+                        case ("FLOAT"):
+                            value = teclado.nextFloat();
+                            values.add(value);
+                            break;
+                        case ("DOUBLE"):
+                            value =  teclado.nextDouble();
+                            values.add(value);
+                            break;
+                    }
                 }
+                
+                tabela.insert(values);
+                
                 
                 
             }

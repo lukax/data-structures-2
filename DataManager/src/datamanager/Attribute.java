@@ -46,4 +46,8 @@ public class Attribute {
     public String getType() {
         return this.type;
     }
+    
+    public int getSize() {
+        return this.attributeSize;
+    }
 }
