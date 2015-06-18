@@ -63,6 +63,7 @@ public class Registro {
         }
         this.isLiberado=false;
         dataFile.writeBoolean(isLiberado);
+        dataFile.writeInt (this.prox);
     }
    
    public int getAtributoPrimario (){
@@ -108,6 +109,7 @@ public class Registro {
                     } 
         }
         novoRegistro.isLiberado = dataFile.readBoolean();
+        novoRegistro.prox = dataFile.readInt();
         return novoRegistro;
     }
     

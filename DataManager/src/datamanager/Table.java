@@ -15,10 +15,11 @@ public class Table {
     
     private int recordCount;// Number of records saved on the table.
     public static int hashCode = 5;
-    public int tamanhoRegistro;
+    public  int tamanhoRegistro = 0;
     private final String name;
     private final String hashFile;
     private final String dataFile;
+    private final String sizeFile;
     private final Catalog catalog;
     public final ArrayList<Attribute> attributes;
     private boolean liberado;
@@ -29,11 +30,11 @@ public class Table {
     public Table(String name) {
         this.recordCount = 0;
         this.name = name;
+        this.sizeFile = this.name.toLowerCase() + "size.dat";
         this.hashFile = this.name.toLowerCase() + "hash.dat";
         this.dataFile = this.name.toLowerCase() + "data.dat";
         this.catalog = Catalog.getInstance();
-        this.attributes = new ArrayList<>();
-        this.tamanhoRegistro=0;
+        this.attributes = new ArrayList<>();        
     }
     
     /**
@@ -96,10 +97,12 @@ public class Table {
     }
     
     public int insert(Registro novoRegistro) throws FileNotFoundException, IOException{
-        for(int i=0; i<novoRegistro.getValues().size(); i++){
-            System.out.println("Sistema esperando um tipo: "+ this.attributes.get(i).getType());
-            System.out.println("Recebendo um tipo: "+ novoRegistro.getValues().get(i).getClass().getName());//ok está recuperando 
-        }
+        this.atualizaTamanhoRegistro();
+        System.out.println("Teste: tamanho do reg: "+this.tamanhoRegistro);
+        //for(int i=0; i<novoRegistro.getValues().size(); i++){
+        //    System.out.println("Sistema esperando um tipo: "+ this.attributes.get(i).getType());
+        //    System.out.println("Recebendo um tipo: "+ novoRegistro.getValues().get(i).getClass().getName());//ok está recuperando 
+        // }
        String nomeArquivoHash = this.hashFile;
        String nomeArquivoDados = this.dataFile;
        CompartimentoHash compartimento;
@@ -115,7 +118,9 @@ public class Table {
             compartimento = new CompartimentoHash(-1);
             for (int i=0; i<Table.hashCode; i++)
             compartimento.salva(hashFile);
+            hashFile.close();
         }
+        hashFile = new RandomAccessFile (nomeArquivoHash,"rw");
         
         //se não existirem ele cria
         //TODO 2-abrir o arquivo de dados
@@ -125,7 +130,8 @@ public class Table {
         System.out.print("Fazendo Escrita Via: " + this.attributes.get(0).getType().toUpperCase()+" ");
         System.out.println(this.attributes.get(0).getName().toLowerCase());
         
-        int numCompart = novoRegistro.getAtributoPrimario()%Table.hashCode;
+        int numCompart = novoRegistro.getAtributoPrimario()%Table.hashCode; //num do compartimento q vai ficar o registro inserido
+        System.out.println("Compartimento que vai ficar o novo registro: "+ numCompart);
         int posArqHash = CompartimentoHash.tamanhoRegistro*numCompart;
         int posArqDados;
         int posRetorno;
@@ -136,37 +142,39 @@ public class Table {
         compartimento = CompartimentoHash.le(hashFile);
         posRetorno = -1;
         System.out.println("Compartimento.prox: " + compartimento.prox);
-        
+
+        novoRegistro.prox=-1;
          if (compartimento.prox==-1){
+            System.out.println("O compartimento está vazio, primeira inserção no mesmo");
             hashFile.seek(posArqHash);
-            compartimento.prox=recordCount;
+            compartimento.prox=recordCount; // recebe Numero de registros em dataFile
             compartimento.salva(hashFile);
-            posArqDados=this.tamanhoRegistro*this.recordCount;
-            dataFile.seek(posArqDados);
-            novoRegistro.salva(dataFile);
-            posRetorno=recordCount;
+            posArqDados=novoRegistro.getTamanhoRegistro()*this.recordCount; // posicao em dataFile
+            dataFile.seek(posArqDados); 
+            novoRegistro.salva(dataFile); //salve o novo registro na posição
+            posRetorno=recordCount; //essa variavel serve para?
         }   
          else {
                posArqDados = novoRegistro.getTamanhoRegistro()*compartimento.prox;
               do{
                 dataFile.seek(posArqDados);
                 registroLido = Registro.le(dataFile, this);
+                //se o registro já existe no arquivo...
                 if (registroLido.getAtributoPrimario()==novoRegistro.getAtributoPrimario()){
                     posRetorno=-1;
                     over=true;
                 }
-                //até aki está pronto 
-                //criar a classe Registro (vai facilitar a vida)
                 else{
-                    if (registroLido.isLiberado==true){
+                    if (registroLido.isLiberado==true){ //um registro que foi excluido anteriormente
                         dataFile.seek(posArqDados);
                         novoRegistro.prox=registroLido.prox;
                         novoRegistro.salva(dataFile);
                         posRetorno=posArqDados/this.tamanhoRegistro;
                         over=true;
-                        
                         }
                     else{
+                        //se estiver ocupado...
+                        //verifica o proximo
                        if(registroLido.prox==-1){
                            novoRegistro.salva(dataFile);
                            registroLido.prox=(posArqDados/this.tamanhoRegistro)+1;
@@ -177,7 +185,7 @@ public class Table {
                            dataFile.seek(posArqDados);
                            registroLido=Registro.le(dataFile, this);
                            over=true;
-                       }
+                           }
                     }
                 }
                posArqDados=this.tamanhoRegistro*registroLido.prox;
@@ -189,6 +197,7 @@ public class Table {
         this.recordCount++;
         hashFile.close();
         dataFile.close();
+        System.out.println("test 8 checked");
    
         return posRetorno; 
         
@@ -200,6 +209,66 @@ public class Table {
     public Attribute getAttribute(int i) {
         return this.attributes.get(i);
     }
+
+    void imprimirEstrutura() throws IOException {
+       
+        RandomAccessFile hashFile, dataFile;
+        String nomeArquivoHash = this.hashFile;
+        String nomeArquivoDados = this.dataFile;
+        
+        hashFile = new RandomAccessFile(nomeArquivoHash, "r");
+        CompartimentoHash compartimento;
+        dataFile = new RandomAccessFile(nomeArquivoDados, "r");
+        Registro registroLido;
+        System.out.println("Imprimindo Estrutura do arquivo hash");
+        int posArqDados;
+        boolean apontaPraNull;
+        for (int i=0; i<Table.hashCode; i++){
+            System.out.print("["+i+"]->");
+            compartimento=CompartimentoHash.le(hashFile);
+            posArqDados = compartimento.prox;
+            System.out.println(compartimento.prox);
+         }
+       
+        System.out.println("Imprimindo Estrutura do arquivo hash + dados");
+        for (int i=0; i<Table.hashCode; i++){
+             hashFile.seek(i*CompartimentoHash.tamanhoRegistro);
+            System.out.print("["+i+"]->");
+            compartimento=CompartimentoHash.le(hashFile);
+            System.out.print(compartimento.prox+"->");
+            
+            if (compartimento.prox!=-1){
+                do{
+                posArqDados = compartimento.prox*this.tamanhoRegistro;
+                dataFile.seek(posArqDados);
+                registroLido = Registro.le(dataFile, this);
+                System.out.print("|"+registroLido.getAtributoPrimario()+"|->");
+                posArqDados=registroLido.prox;
+                }while(registroLido.prox!=-1);
+            }
+            System.out.println("");
+         }
+        
+        hashFile.close();
+        dataFile.close();
+       
+        
+    }
+
+    void validaTabela() throws FileNotFoundException, IOException {
+        this.tamanhoRegistro+=1; //tamanho de um booelano (isLiberado)
+        this.tamanhoRegistro+=4; //tamanho de um int (prox)
+        RandomAccessFile sizeFile = new RandomAccessFile(this.sizeFile, "rw");
+        sizeFile.writeInt(this.tamanhoRegistro);
+        sizeFile.close();
+    }
+    
+    public void atualizaTamanhoRegistro () throws FileNotFoundException, IOException{
+        RandomAccessFile sizeFile = new RandomAccessFile (this.sizeFile, "r");
+        this.tamanhoRegistro = sizeFile.readInt();
+        sizeFile.close();
+    }
+
 
 
 }

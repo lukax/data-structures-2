@@ -9,7 +9,7 @@ public class Attribute {
     
     private String name;
     private String type;
-    private int attributeSize;
+    public int attributeSize;
     
     /**
      * The Attribute constructor.
@@ -27,7 +27,7 @@ public class Attribute {
         } else if (this.type.equalsIgnoreCase("boolean")) {
             this.attributeSize = 1;
         } else {
-            this.attributeSize = 12;
+            this.attributeSize = 10;
         }
     }
     

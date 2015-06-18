@@ -64,14 +64,12 @@ public class Main {
                     System.out.println("Tipo do Atributo");
                     String tipoAtributo = teclado.next();
                     tabela.addAttribute(nomeAtributo, tipoAtributo);
-                    System.out.println("Atributo Adicionado");
-                    tabela.addAttribute(nomeAtributo, tipoAtributo);
-                    
+                    System.out.println("Atributo Adicionado"); 
+                    System.out.println("Tamanho do do registro da tabela (temporariamente): " + tabela.tamanhoRegistro);
                 }
-                
-                
-                                
             }
+            tabela.validaTabela();//funcão q adiciona ao tamanhodeRegistro dessa tabela + 1 booleano e +1 inteiro para os campos isLiberado e prox
+            
             }
             
             if (opc==2){
@@ -80,6 +78,7 @@ public class Main {
                 tabela = db.getTable (nomeTabela);
                 System.out.println("#####TABELA: "+ tabela.getName()+"#####");
                 System.out.println("qtd de atributos: "+tabela.getAttributes().size());
+                    System.out.println("Tamanho do do registro da tabela (definitivamente): " + tabela.tamanhoRegistro);
                 Object value =null;
                 Registro novoRegistro = new Registro(tabela);
                 
@@ -115,6 +114,15 @@ public class Main {
                 
                 
                 
+            }
+            
+            if (opc==1000){
+                System.out.println("Opcao de Desenvolvedor: Imprimir Estrutura dos arquivos");
+                System.out.print("\nNome da Tabela:");
+                String nomeTabela = teclado.next();  
+                tabela = db.getTable (nomeTabela);
+                System.out.println("#####TABELA: "+ tabela.getName()+"#####");
+                tabela.imprimirEstrutura();
             }
             System.out.println("#########################");
             

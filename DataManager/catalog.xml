@@ -4,45 +4,11 @@
     <name>PESSOA</name>
   <attribute>
       <name>COD</name>
-      <type>int</type>
+      <type>INT</type>
     </attribute>
   <attribute>
       <name>NOME</name>
-      <type>string</type>
-    </attribute>
-  <attribute>
-      <name>IDADE</name>
-      <type>int</type>
-    </attribute>
-  </table>
-<table>
-    <name>CARRO</name>
-  <attribute>
-      <name>COD</name>
-      <type>int</type>
-    </attribute>
-  <attribute>
-      <name>MARCA</name>
-      <type>string</type>
-    </attribute>
-  <attribute>
-      <name>ANO</name>
-      <type>int</type>
-    </attribute>
-  </table>
-<table>
-    <name>POSSUI_CARRO</name>
-  <attribute>
-      <name>COD_PESSOA</name>
-      <type>int</type>
-    </attribute>
-  <attribute>
-      <name>COD_CARRO</name>
-      <type>int</type>
-    </attribute>
-  <attribute>
-      <name>ANO</name>
-      <type>int</type>
+      <type>STRING</type>
     </attribute>
   </table>
 </database>
