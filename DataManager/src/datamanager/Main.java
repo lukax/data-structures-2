@@ -80,8 +80,8 @@ public class Main {
                 tabela = db.getTable (nomeTabela);
                 System.out.println("#####TABELA: "+ tabela.getName()+"#####");
                 System.out.println("qtd de atributos: "+tabela.getAttributes().size());
-                ArrayList<Object> values = new ArrayList();
-                Object value;
+                Object value =null;
+                Registro novoRegistro = new Registro(tabela);
                 
                 for (int i=0; i<tabela.getAttributes().size(); i++){
                     String tipo = tabela.getAttribute(i).getType().toUpperCase();
@@ -90,32 +90,28 @@ public class Main {
                     switch (tipo){
                         case ("INT"):
                             value = teclado.nextInt();
-                            values.add(value);
                             break;
                         case ("INTEGER"):
                             value = teclado.nextInt();
-                            values.add(value);
                             break;
                         case ("STRING"):
                             value = teclado.next();
-                            values.add(value);
                             break;
                         case ("BOOLEAN"):
                             value = teclado.nextBoolean();
-                            values.add(value);
                             break;
                         case ("FLOAT"):
                             value = teclado.nextFloat();
-                            values.add(value);
                             break;
                         case ("DOUBLE"):
                             value =  teclado.nextDouble();
-                            values.add(value);
                             break;
                     }
+                    if (value!=null)
+                     novoRegistro.addValue(value);
                 }
                 
-                tabela.insert(values);
+                tabela.insert(novoRegistro);
                 
                 
                 

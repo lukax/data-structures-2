@@ -14,13 +14,13 @@ import java.util.ArrayList;
 public class Table {
     
     private int recordCount;// Number of records saved on the table.
-    private static int hashCode = 5;
-    private int tamanhoRegistro;
+    public static int hashCode = 5;
+    public int tamanhoRegistro;
     private final String name;
     private final String hashFile;
     private final String dataFile;
     private final Catalog catalog;
-    private final ArrayList<Attribute> attributes;
+    public final ArrayList<Attribute> attributes;
     private boolean liberado;
     /**
      * The table constructor.
@@ -95,14 +95,14 @@ public class Table {
         
     }
     
-    public void insert(ArrayList<Object> atributos) throws FileNotFoundException, IOException{
-        for(int i=0; i<atributos.size(); i++){
+    public int insert(Registro novoRegistro) throws FileNotFoundException, IOException{
+        for(int i=0; i<novoRegistro.getValues().size(); i++){
             System.out.println("Sistema esperando um tipo: "+ this.attributes.get(i).getType());
-            System.out.println("Recebendo um tipo: "+ atributos.get(i).getClass().getName());//ok está recuperando 
+            System.out.println("Recebendo um tipo: "+ novoRegistro.getValues().get(i).getClass().getName());//ok está recuperando 
         }
        String nomeArquivoHash = this.hashFile;
        String nomeArquivoDados = this.dataFile;
-        CompartimentoHash compartimento;
+       CompartimentoHash compartimento;
         
        
        //TODO 1-abrir o arquivo de hash
@@ -125,11 +125,12 @@ public class Table {
         System.out.print("Fazendo Escrita Via: " + this.attributes.get(0).getType().toUpperCase()+" ");
         System.out.println(this.attributes.get(0).getName().toLowerCase());
         
-        int numCompart = (int)atributos.get(0)%Table.hashCode;
+        int numCompart = novoRegistro.getAtributoPrimario()%Table.hashCode;
         int posArqHash = CompartimentoHash.tamanhoRegistro*numCompart;
         int posArqDados;
         int posRetorno;
         boolean over = false;
+        Registro registroLido;
         
         hashFile.seek(posArqHash);
         compartimento = CompartimentoHash.le(hashFile);
@@ -142,48 +143,50 @@ public class Table {
             compartimento.salva(hashFile);
             posArqDados=this.tamanhoRegistro*this.recordCount;
             dataFile.seek(posArqDados);
-            this.salva(dataFile, atributos);
+            novoRegistro.salva(dataFile);
             posRetorno=recordCount;
         }   
          else {
-               posArqDados = this.tamanhoRegistro*compartimento.prox;
+               posArqDados = novoRegistro.getTamanhoRegistro()*compartimento.prox;
               do{
                 dataFile.seek(posArqDados);
-                ArrayList<Attribute> registroLido = this.le(dataFile);
-                if (registroLido.get(0)==atributos.get(0)){
+                registroLido = Registro.le(dataFile, this);
+                if (registroLido.getAtributoPrimario()==novoRegistro.getAtributoPrimario()){
                     posRetorno=-1;
                     over=true;
                 }
+                //até aki está pronto 
+                //criar a classe Registro (vai facilitar a vida)
                 else{
-                    if (this.flag==Cliente.LIBERADO){
+                    if (registroLido.isLiberado==true){
                         dataFile.seek(posArqDados);
-                        clienteASerInserido.prox=clienteLido.prox;
-                        clienteASerInserido.salva(dataFile);
-                        posRetorno=posArqDados/Cliente.tamanhoRegistro;
+                        novoRegistro.prox=registroLido.prox;
+                        novoRegistro.salva(dataFile);
+                        posRetorno=posArqDados/this.tamanhoRegistro;
                         over=true;
                         
                         }
                     else{
-                       if(clienteLido.prox==-1){
-                           clienteASerInserido.salva(dataFile);
-                           clienteLido.prox=(posArqDados/Cliente.tamanhoRegistro)+1;
+                       if(registroLido.prox==-1){
+                           novoRegistro.salva(dataFile);
+                           registroLido.prox=(posArqDados/this.tamanhoRegistro)+1;
                            dataFile.seek(posArqDados);
-                           clienteLido.salva(dataFile);
-                           posArqDados=Cliente.tamanhoRegistro*clienteLido.prox;
-                           posRetorno=posArqDados/Cliente.tamanhoRegistro;
+                           registroLido.salva(dataFile);
+                           posArqDados=this.tamanhoRegistro*registroLido.prox;
+                           posRetorno=posArqDados/this.tamanhoRegistro;
                            dataFile.seek(posArqDados);
-                           clienteLido=Cliente.le(dataFile);
+                           registroLido=Registro.le(dataFile, this);
                            over=true;
                        }
                     }
                 }
-               posArqDados=Cliente.tamanhoRegistro*clienteLido.prox;
-              }while(clienteLido.prox!=-1 && over==false);
+               posArqDados=this.tamanhoRegistro*registroLido.prox;
+              }while(registroLido.prox!=-1 && over==false);
 
             
         }
         
-        numRegistros++;
+        this.recordCount++;
         hashFile.close();
         dataFile.close();
    
@@ -191,43 +194,12 @@ public class Table {
         
         
         
+           }
     
-    }
 
     public Attribute getAttribute(int i) {
         return this.attributes.get(i);
     }
 
-    private void salva(RandomAccessFile dataFile, ArrayList<Object> atributos) throws IOException {
-        for (int i=0; i<this.attributes.size(); i++){
-            String tipo = attributes.get(i).getType().toUpperCase();
-            
-             switch (tipo){
-                        case ("INT"):
-                            dataFile.writeInt((int) atributos.get(i));
-                            break;
-                        case ("INTEGER"):
-                            dataFile.writeInt((int) atributos.get(i));
-                            break;
-                        case ("STRING"):
-                            dataFile.writeUTF((String) atributos.get(i));
-                            break;
-                        case ("BOOLEAN"):
-                            dataFile.writeBoolean((boolean) atributos.get(i));
-                            break;
-                        case ("FLOAT"):
-                            dataFile.writeFloat((float) atributos.get(i));
-                            break;
-                        case ("DOUBLE"):
-                            dataFile.writeDouble((double) atributos.get(i));
-                            break;
-                    } 
-        }
-        this.liberado=false;
-        dataFile.writeBoolean(liberado);
-    }
 
-    private ArrayList<Attribute> le(RandomAccessFile dataFile) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
